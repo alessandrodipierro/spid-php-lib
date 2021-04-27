@@ -57,7 +57,7 @@ class Response implements ResponseInterface
         } elseif ($xml->getElementsByTagName('Issuer')->item(0)->nodeValue != $_SESSION['idpEntityId']) {
             throw new \Exception("Invalid Issuer attribute, expected " . $_SESSION['idpEntityId'] .
                 " but received " . $xml->getElementsByTagName('Issuer')->item(0)->nodeValue);
-        } elseif (!epmty($xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format')) && 
+        } elseif (!empty($xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format')) && 
                     $xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format') != 'urn:oasis:names:tc:SAML:2.0:nameid-format:entity') {
             throw new \Exception("Invalid Issuer attribute, expected 'urn:oasis:names:tc:SAML:2.0:nameid-format:" .
                 "entity'" . " but received " . $xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format'));
