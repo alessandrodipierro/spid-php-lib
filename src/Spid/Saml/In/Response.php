@@ -196,8 +196,14 @@ class Response implements ResponseInterface
             return false;
         }
 
-        // Response OK
         $session = $this->spidSession($xml);
+        
+        //check Spid level, accept only response with level 1
+        if(!isset($session->level) || $session->level != 1) {
+            throw new \Exception("Invalid Spid response level, expected 1 but received " . $session->level);
+        }
+
+        // Response OK
         $_SESSION['spidSession'] = (array)$session;
         unset($_SESSION['RequestID']);
         unset($_SESSION['idpName']);
