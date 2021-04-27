@@ -196,11 +196,21 @@ class Response implements ResponseInterface
             return false;
         }
         
+        //check if exists AuthnStatement element
+        if($xml->getElementsByTagName('AuthnStatement')->item(0) == null){
+            throw new \Exception("Missing AuthnStatement element");
+        }
+
+        //check if exists AuthnContext element
+        if($xml->getElementsByTagName('AuthnContext')->item(0) == null){
+            throw new \Exception("Missing AuthnContext element");
+        }
+
         //check Spid level, accept only response with level 1
         if(!isset($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue) ||
-        !strpos($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue, 'urn:oasis:names:tc:SAML:2.0:ac:classes:SpidL') ||
+        !strpos($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue, 'https://www.spid.gov.it/SpidL') ||
         substr($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue, -1) != 1) {
-            throw new \Exception("Invalid AuthnContextClassRef, expected 'urn:oasis:names:tc:SAML:2.0:ac:classes:SpidL1' but received " . 
+            throw new \Exception("Invalid AuthnContextClassRef, expected 'https://www.spid.gov.it/SpidL1' but received " . 
             $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue);
         }
 
