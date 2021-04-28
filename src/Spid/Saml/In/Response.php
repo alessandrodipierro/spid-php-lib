@@ -203,7 +203,7 @@ class Response implements ResponseInterface
 
         //check AuthnStatement
         if ($xml->getElementsByTagName('AuthnStatement')->length <= 0) {
-            throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
+            throw new \Exception("Missing AuthnStatement attribute");
         }
 
         //check AuthnContext of AuthnStatement
@@ -213,7 +213,7 @@ class Response implements ResponseInterface
 
         //check AuthnContextClassRef
         if ($xml->getElementsByTagName('AuthnStatement')->item(0)->item(0)->length <= 0) {
-            throw new \Exception("Missing AuthnContextClassRef attribute");
+            throw new \Exception("Missing AuthnContextClassRef of AuthnContext of AuthnStatement attribute");
         }
 
         //check Spid level, accept only response with level 1
