@@ -80,8 +80,8 @@ class Response implements ResponseInterface
             } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) >
                 strtotime('now') + $accepted_clock_skew_seconds) {
                 throw new \Exception("IssueInstant attribute on Assertion is in the future");
-            } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) <
-                strtotime('now') + $accepted_clock_skew_seconds) {
+            } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) <=
+                strtotime('now') - $accepted_clock_skew_seconds) {
                 throw new \Exception("IssueInstant attribute on Assertion is in the past");
             }
 
