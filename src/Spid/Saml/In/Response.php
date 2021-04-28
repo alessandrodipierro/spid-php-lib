@@ -81,7 +81,7 @@ class Response implements ResponseInterface
                 strtotime('now') + $accepted_clock_skew_seconds) {
                 throw new \Exception("IssueInstant attribute on Assertion is in the future");
             } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) <=
-                strtotime('now') + $accepted_clock_skew_seconds) {
+                strtotime('now') - $accepted_clock_skew_seconds) {
                 throw new \Exception("IssueInstant: " . strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) . " - Now: " . (strtotime('now') + $accepted_clock_skew_seconds));
                 // throw new \Exception("IssueInstant attribute on Assertion is in the past");
             }
