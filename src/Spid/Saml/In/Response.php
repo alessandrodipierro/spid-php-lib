@@ -172,6 +172,28 @@ class Response implements ResponseInterface
             if ($xml->getElementsByTagName('AttributeValue')->length == 0) {
                 throw new \Exception("Missing AttributeValue Element");
             }
+
+            //check AuthnStatement
+            if (empty($xml->getElementsByTagName('AuthnStatement')->item(0)->nodeValue)) {
+                throw new \Exception("Missing AuthnStatement attribute");
+            }
+
+            //check AuthnContext of AuthnStatement
+            if (empty($xml->getElementsByTagName('AuthnContext')->item(0)->nodeValue)) {
+                throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
+            }
+
+            //check AuthnContextClassRef
+            if (empty($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue)) {
+                throw new \Exception("Missing AuthnContextClassRef of AuthnContext of AuthnStatement attribute");
+            }
+
+            //check Spid level, accept only response with level 1
+            if(!isset($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue) ||
+                $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue !== 'https://www.spid.gov.it/SpidL1') {
+                throw new \Exception("Invalid AuthnContextClassRef, expected 'https://www.spid.gov.it/SpidL1' but received " . 
+                $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue);
+            }
         }
 
         if ($xml->getElementsByTagName('Status')->length <= 0) {
@@ -199,28 +221,6 @@ class Response implements ResponseInterface
         } else {
             // Status code != success
             return false;
-        }
-
-        //check AuthnStatement
-        if (empty($xml->getElementsByTagName('AuthnStatement')->item(0)->nodeValue)) {
-            throw new \Exception("Missing AuthnStatement attribute");
-        }
-
-        //check AuthnContext of AuthnStatement
-        if (empty($xml->getElementsByTagName('AuthnContext')->item(0)->nodeValue)) {
-            throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
-        }
-
-        //check AuthnContextClassRef
-        if (empty($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue)) {
-            throw new \Exception("Missing AuthnContextClassRef of AuthnContext of AuthnStatement attribute");
-        }
-
-        //check Spid level, accept only response with level 1
-        if(!isset($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue) ||
-            $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue !== 'https://www.spid.gov.it/SpidL1') {
-            throw new \Exception("Invalid AuthnContextClassRef, expected 'https://www.spid.gov.it/SpidL1' but received " . 
-            $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue);
         }
 
         // Response OK
