@@ -37,9 +37,7 @@ class Response implements ResponseInterface
             throw new \Exception("Invalid IssueInstant attribute on Response");
         } elseif (strtotime($root->getAttribute('IssueInstant')) > strtotime('now') + $accepted_clock_skew_seconds) {
             throw new \Exception("IssueInstant attribute on Response is in the future");
-        } /*elseif (strtotime($root->getAttribute('IssueInstant')) < strtotime('now') - $accepted_clock_skew_seconds) {
-            throw new \Exception("IssueInstant attribute on Response is in the past");
-        }*/
+        }
 
         if ($root->getAttribute('InResponseTo') == "" || !isset($_SESSION['RequestID'])) {
             throw new \Exception("Missing InResponseTo attribute, or request ID was not saved correctly " .
@@ -85,7 +83,6 @@ class Response implements ResponseInterface
                 throw new \Exception("IssueInstant attribute on Assertion is in the future");
             } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) <=
                 strtotime('now') - $accepted_clock_skew_seconds) {
-                // throw new \Exception("IssueInstant: " . strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) . " - Now: " . (strtotime('now') + $accepted_clock_skew_seconds));
                 throw new \Exception("IssueInstant attribute on Assertion is in the past");
             }
 
@@ -192,7 +189,7 @@ class Response implements ResponseInterface
                 throw new \Exception("Missing AuthnContextClassRef of AuthnContext of AuthnStatement attribute");
             }
 
-            //check Spid level, accept only response with level 1
+            //check Spid level, accept only response with level 1 like the Request
             if(!isset($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue) ||
                 $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue !== 'https://www.spid.gov.it/SpidL1') {
                 throw new \Exception("Invalid AuthnContextClassRef, expected 'https://www.spid.gov.it/SpidL1' but received " . 
