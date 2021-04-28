@@ -202,7 +202,7 @@ class Response implements ResponseInterface
         }
 
         //check AuthnStatement and AuthnContext of AuthnStatement
-        if ($xml->getElementsByTagName('AuthnContext')->item(0)->nodeValue == '') {
+        if ($xml->getElementsByTagName('AuthnStatement')->item(0)->nodeValue == '') {
             throw new \Exception("Missing AuthnStatement or AuthnContext of AuthnStatement attribute");
         }
 
