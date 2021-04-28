@@ -202,12 +202,12 @@ class Response implements ResponseInterface
         }
 
         //check AuthnStatement
-        // if (empty($xml->getElementsByTagName('AuthnStatement')->nodeValue)) {
-        //     throw new \Exception("Missing AuthnStatement attribute");
-        // }
+        if ($xml->getElementsByTagName('AuthnStatement')->length == 0) {
+            throw new \Exception("Missing AuthnStatement attribute");
+        }
 
         //check AuthnContext of AuthnStatement
-        if (empty($xml->getElementsByTagName('AuthnStatement')->item(0)->nodeValue)) {
+        if ($xml->getElementsByTagName('AuthnStatement')->item(0)->length == 0) {
             throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
         }
 
