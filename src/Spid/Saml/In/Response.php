@@ -28,6 +28,9 @@ class Response implements ResponseInterface
         } elseif ($root->getAttribute('Version') != '2.0') {
             throw new \Exception("Invalid Version attribute");
         }
+        if ($root->getAttribute('ID') == "") {
+            throw new \Exception("Missing Response ID attribute");
+        }
         if ($root->getAttribute('IssueInstant') == "") {
             throw new \Exception("Missing IssueInstant attribute on Response");
         } elseif (!$this->validateDate($root->getAttribute('IssueInstant'))) {
