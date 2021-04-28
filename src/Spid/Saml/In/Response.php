@@ -206,9 +206,9 @@ class Response implements ResponseInterface
             throw new \Exception("Missing AuthStatement attribute");
         }
 
-        //check if exists AuthnContext element
-        if($xml->getElementsByTagName('AuthnContext')->item(0) == null){
-            throw new \Exception("Missing AuthnContext element");
+        //check AuthnContext of AuthnStatement
+        if ($xml->getElementsByTagName('AuthnStatement')->item(0)->nodeValue == '') {
+            throw new \Exception("Missing AuthnContext attribute");
         }
 
         //check Spid level, accept only response with level 1
