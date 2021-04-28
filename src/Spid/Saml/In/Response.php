@@ -218,8 +218,7 @@ class Response implements ResponseInterface
 
         //check Spid level, accept only response with level 1
         if(!isset($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue) ||
-        !strpos($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue, 'https://www.spid.gov.it/SpidL') ||
-        substr($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue, -1) != 1) {
+            $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue !== 'https://www.spid.gov.it/SpidL1') {
             throw new \Exception("Invalid AuthnContextClassRef, expected 'https://www.spid.gov.it/SpidL1' but received " . 
             $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue);
         }
