@@ -200,10 +200,10 @@ class Response implements ResponseInterface
             // Status code != success
             return false;
         }
-        
-        //check if exists AuthnStatement element
-        if($xml->getElementsByTagName('AuthnStatement')->item(0) == null){
-            throw new \Exception("Missing AuthnStatement element");
+
+        //check AuthnStatement
+        if ($xml->getElementsByTagName('AuthnStatement')->length <= 0) {
+            throw new \Exception("Missing AuthStatement attribute");
         }
 
         //check if exists AuthnContext element
