@@ -201,9 +201,19 @@ class Response implements ResponseInterface
             return false;
         }
 
-        //check AuthnStatement and AuthnContext of AuthnStatement
-        if ($xml->getElementsByTagName('AuthnStatement')->item(0)->length == 0) {
+        //check AuthnStatement
+        if ($xml->getElementsByTagName('AuthnStatement')->item(0)->length <= 0) {
             throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
+        }
+
+        //check AuthnContext of AuthnStatement
+        if ($xml->getElementsByTagName('AuthnContext')->item(0)->length <= 0) {
+            throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
+        }
+
+        //check AuthnContextClassRef
+        if ($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->length <= 0) {
+            throw new \Exception("Missing AuthnContextClassRef attribute");
         }
 
         //check Spid level, accept only response with level 1
