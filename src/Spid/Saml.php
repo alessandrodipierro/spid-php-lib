@@ -80,7 +80,10 @@ XML;
         $attrcsArray = $this->settings['sp_attributeconsumingservice'] ?? array();
 
         $xml = <<<XML
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="$entityID" ID="$id">
+<md:EntityDescriptor 
+    xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" 
+    xmlns:spid="https://spid.gov.it/saml-extensions" 
+    entityID="$entityID" ID="$id">
     <md:SPSSODescriptor
         protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"
         AuthnRequestsSigned="true" WantAssertionsSigned="true">
@@ -144,6 +147,156 @@ XML;
 </md:Organization>
 XML;
         }
+        
+        // Contact person section
+        if (array_key_exists('sp_contact_person', $this->settings)) {
+            $sp_contact_person = $this->settings['sp_contact_person'];
+            // "Other" section
+            if (array_key_exists('other', $sp_contact_person)) {
+                $contact_person_other = $sp_contact_person['other'];
+                $xml .= <<<XML
+                    <md:ContactPerson contactType="other">
+                        <md:Extensions>
+                    XML;
+                if (array_key_exists('vat_number', $contact_person_other)) {
+                    $vat_number = $contact_person_other['vat_number'];
+                    $xml .= <<<XML
+                        <spid:VATNumber>$vat_number</spid:VATNumber>
+                        XML;
+                }
+                if (array_key_exists('fiscal_code', $contact_person_other)) {
+                    $fiscal_code = $contact_person_other['fiscal_code'];
+                    $xml .= <<<XML
+                        <spid:FiscalCode>$fiscal_code</spid:FiscalCode>
+                        XML;
+                }
+                $xml .= <<<XML
+                    <spid:Private/>
+                    </md:Extensions>
+                    XML;
+                if (array_key_exists('email_address', $contact_person_other)) {
+                    $email_address = $contact_person_other['email_address'];
+                    $xml .= <<<XML
+                        <md:EmailAddress>$email_address</md:EmailAddress>
+                        XML;
+                }
+                if (array_key_exists('telephone_number', $contact_person_other)) {
+                    $telephone_number = $contact_person_other['telephone_number'];
+                    $xml .= <<<XML
+                        <md:TelephoneNumber>$telephone_number</md:TelephoneNumber>
+                        XML;
+                }
+                $xml .= <<<XML
+                    </md:ContactPerson>
+                    XML;
+            }
+            // "Billing" section
+            if (array_key_exists('billing', $sp_contact_person)) {
+                $contact_person_billing = $sp_contact_person['billing'];
+                $xml .= <<<XML
+                    <md:ContactPerson contactType="billing">
+                        <md:Extensions 
+                            xmlns:fpa="https://spid.gov.it/invoicing-extensions">
+                            <fpa:CessionarioCommittente>
+                                <fpa:DatiAnagrafici>
+                    XML;
+                if (array_key_exists('id_paese', $contact_person_billing) || array_key_exists('id_codice', $contact_person_billing)) {
+                    $xml .= <<<XML
+                        <fpa:IdFiscaleIVA>
+                        XML;
+                    if (array_key_exists('id_paese', $contact_person_billing)) {
+                        $id_paese = $contact_person_billing['id_paese'];
+                        $xml .= <<<XML
+                            <fpa:IdPaese>$id_paese</fpa:IdPaese>
+                            XML;
+                    }
+                    if (array_key_exists('id_codice', $contact_person_billing)) {
+                        $id_codice = $contact_person_billing['id_codice'];
+                        $xml .= <<<XML
+                            <fpa:IdCodice>$id_codice</fpa:IdCodice>
+                            XML;
+                    }
+                    $xml .= <<<XML
+                        </fpa:IdFiscaleIVA>
+                        XML;
+                }
+                if (array_key_exists('denominazione', $contact_person_billing)) {
+                    $denominazione = $contact_person_billing['denominazione'];
+                    $xml .= <<<XML
+                        <fpa:Anagrafica>
+                            <fpa:Denominazione>$denominazione</fpa:Denominazione> 
+                            </fpa:Anagrafica>
+                        XML;
+                }
+                $xml .= <<<XML
+                    </fpa:DatiAnagrafici>
+                    <fpa:Sede>
+                    XML;
+                if (array_key_exists('indirizzo', $contact_person_billing)) {
+                        $indirizzo = $contact_person_billing['indirizzo'];
+                        $xml .= <<<XML
+                            <fpa:Indirizzo>$indirizzo</fpa:Indirizzo>
+                            XML;
+                }
+                if (array_key_exists('numero_civico', $contact_person_billing)) {
+                    $numero_civico = $contact_person_billing['numero_civico'];
+                    $xml .= <<<XML
+                        <fpa:NumeroCivico>$numero_civico</fpa:NumeroCivico>
+                        XML;
+                }
+                if (array_key_exists('cap', $contact_person_billing)) {
+                    $cap = $contact_person_billing['cap'];
+                    $xml .= <<<XML
+                        <fpa:CAP>$cap</fpa:CAP>
+                        XML;
+                }
+                if (array_key_exists('comune', $contact_person_billing)) {
+                    $comune = $contact_person_billing['comune'];
+                    $xml .= <<<XML
+                        <fpa:Comune>$comune</fpa:Comune>
+                        XML;
+                }
+                if (array_key_exists('provincia', $contact_person_billing)) {
+                    $provincia = $contact_person_billing['provincia'];
+                    $xml .= <<<XML
+                        <fpa:Provincia>$provincia</fpa:Provincia>
+                        XML;
+                }
+                if (array_key_exists('nazione', $contact_person_billing)) {
+                    $nazione = $contact_person_billing['nazione'];
+                    $xml .= <<<XML
+                        <fpa:Nazione>$nazione</fpa:Nazione>
+                        XML;
+                }
+                $xml .= <<<XML
+                    </fpa:Sede>
+                    </fpa:CessionarioCommittente>
+                    </md:Extensions>
+                    XML;
+                if (array_key_exists('company', $contact_person_billing)) {
+                    $company = $contact_person_billing['company'];
+                    $xml .= <<<XML
+                        <md:Company>$company</md:Company>
+                        XML;
+                }
+                if (array_key_exists('email_address', $contact_person_billing)) {
+                    $email_address = $contact_person_billing['email_address'];
+                    $xml .= <<<XML
+                        <md:EmailAddress>$email_address</md:EmailAddress>
+                        XML;
+                }
+                if (array_key_exists('telephone_number', $contact_person_billing)) {
+                    $telephone_number = $contact_person_billing['telephone_number'];
+                    $xml .= <<<XML
+                        <md:TelephoneNumber>$telephone_number</md:TelephoneNumber>
+                        XML;
+                }
+                $xml .= <<<XML
+                    </md:ContactPerson>
+                    XML;
+            }
+        }
+
         $xml .= '</md:EntityDescriptor>';
 
         return SignatureUtils::signXml($xml, $this->settings);
