@@ -28,6 +28,9 @@ class Response implements ResponseInterface
         } elseif ($root->getAttribute('Version') != '2.0') {
             throw new \Exception("Invalid Version attribute");
         }
+        if ($root->getAttribute('ID') == "") {
+            throw new \Exception("Missing Response ID attribute");
+        }
         if ($root->getAttribute('IssueInstant') == "") {
             throw new \Exception("Missing IssueInstant attribute on Response");
         } elseif (!$this->validateDate($root->getAttribute('IssueInstant'))) {
@@ -57,8 +60,8 @@ class Response implements ResponseInterface
         } elseif ($xml->getElementsByTagName('Issuer')->item(0)->nodeValue != $_SESSION['idpEntityId']) {
             throw new \Exception("Invalid Issuer attribute, expected " . $_SESSION['idpEntityId'] .
                 " but received " . $xml->getElementsByTagName('Issuer')->item(0)->nodeValue);
-        } elseif ($xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format') !=
-            'urn:oasis:names:tc:SAML:2.0:nameid-format:entity') {
+        } elseif (!empty($xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format')) && 
+                    $xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format') != 'urn:oasis:names:tc:SAML:2.0:nameid-format:entity') {
             throw new \Exception("Invalid Issuer attribute, expected 'urn:oasis:names:tc:SAML:2.0:nameid-format:" .
                 "entity'" . " but received " . $xml->getElementsByTagName('Issuer')->item(0)->getAttribute('Format'));
         }
@@ -78,6 +81,9 @@ class Response implements ResponseInterface
             } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) >
                 strtotime('now') + $accepted_clock_skew_seconds) {
                 throw new \Exception("IssueInstant attribute on Assertion is in the future");
+            } elseif (strtotime($xml->getElementsByTagName('Assertion')->item(0)->getAttribute('IssueInstant')) <=
+                strtotime('now') - $accepted_clock_skew_seconds) {
+                throw new \Exception("IssueInstant attribute on Assertion is in the past");
             }
 
             // check item 1, this must be the Issuer element child of Assertion
@@ -166,6 +172,28 @@ class Response implements ResponseInterface
 
             if ($xml->getElementsByTagName('AttributeValue')->length == 0) {
                 throw new \Exception("Missing AttributeValue Element");
+            }
+
+            //check AuthnStatement
+            if (empty($xml->getElementsByTagName('AuthnStatement')->item(0)->nodeValue)) {
+                throw new \Exception("Missing AuthnStatement attribute");
+            }
+
+            //check AuthnContext of AuthnStatement
+            if (empty($xml->getElementsByTagName('AuthnContext')->item(0)->nodeValue)) {
+                throw new \Exception("Missing AuthnContext of AuthnStatement attribute");
+            }
+
+            //check AuthnContextClassRef
+            if (empty($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue)) {
+                throw new \Exception("Missing AuthnContextClassRef of AuthnContext of AuthnStatement attribute");
+            }
+
+            //check Spid level, accept only response with level 1 like the Request
+            if(!isset($xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue) ||
+                $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue !== 'https://www.spid.gov.it/SpidL1') {
+                throw new \Exception("Invalid AuthnContextClassRef, expected 'https://www.spid.gov.it/SpidL1' but received " . 
+                $xml->getElementsByTagName('AuthnContextClassRef')->item(0)->nodeValue);
             }
         }
 
