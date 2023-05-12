@@ -30,7 +30,13 @@ class Settings
             ]
         ],
         'idp_metadata_folder' => self::REQUIRED,
-        'accepted_clock_skew_seconds' => self::NOT_REQUIRED
+        'accepted_clock_skew_seconds' => self::NOT_REQUIRED,
+        'sp_contact_person' => [
+            self::REQUIRED => [
+                'other' => self::REQUIRED,
+                'billing' => self::REQUIRED,
+            ]
+        ]
     ];
 
     private static $validAttributeFields = [
